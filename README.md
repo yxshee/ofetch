@@ -81,7 +81,7 @@ A parsed error body is available with `error.data`. You may also use `FetchError
 
 ```ts
 await ofetch("https://google.com/404");
-// FetchError: [GET] "https://google/404": 404 Not Found
+// FetchError: [GET] "https://google.com/404": 404 Not Found
 //     at async main (/project/playground.ts:4:3)
 ```
 
@@ -147,7 +147,7 @@ const article = await ofetch<Article>(`/api/article/${id}`);
 
 ## ✔️ Adding `baseURL`
 
-By using `baseURL` option, `ofetch` prepends it for trailing/leading slashes and query search params for baseURL using [ufo](https://github.com/unjs/ufo):
+By using `baseURL` option, `ofetch` prepends it to the request URL, with exactly one slash between them:
 
 ```js
 await ofetch("/config", { baseURL });
@@ -155,7 +155,7 @@ await ofetch("/config", { baseURL });
 
 ## ✔️ Adding Query Search Params
 
-By using `query` option (or `params` as alias), `ofetch` adds query search params to the URL by preserving the query in the request itself using [ufo](https://github.com/unjs/ufo):
+By using `query` option (or `params` as alias), `ofetch` adds query search params to the URL by preserving the query in the request itself:
 
 ```js
 await ofetch("/movie?lang=en", { query: { id: 123 } });
@@ -179,7 +179,7 @@ await ofetch("/api", {
 
     // Add `?t=1640125211170` to query search params
     options.query = options.query || {};
-    options.query.t = new Date();
+    options.query.t = Date.now();
   },
 });
 ```
@@ -249,7 +249,7 @@ await ofetch("/api", {
 
 This utility is useful if you need to use common options across several fetch calls.
 
-**Note:** Defaults will be cloned at one level and inherited. Be careful about nested options like `headers`.
+**Note:** Defaults are merged with the options of each call at one level: an option passed to the call, such as `onRequest`, replaces the default one. `headers` and `query` (or `params`) are the exception: they are merged key by key.
 
 ```js
 const apiFetch = ofetch.create({ baseURL: "/api" });
